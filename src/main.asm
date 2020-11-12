@@ -46,7 +46,9 @@ RSEG myprog 		;saját kódszegmens létrehozása
 ; -----------------------------------------------------------------------------------
 ; Főprogram
 ; -----------------------------------------------------------------------------------
-; Feladata: 
+; Feladata: Meghívni a Minimum, Maximum kereső szubrutint és a könyebb debugolás
+; végett a maximumot lementeni a Bank0 R6 regiszterben és a minimumot a Bank0 R7
+; regiszterben, majd egy végtelen ciklusban vár a kontroller.
 ; -----------------------------------------------------------------------------------
 Main:
 	CLR IE_EA ; interruptok tiltása watchdog tiltás idejére
@@ -90,10 +92,13 @@ SearchMinMax:
 	TestToAllEllementOfTheArray:
 		MOV A, ArrayLength ; Vizsgáláshoz betöltöm az A-ba az hosszúságot
 		JNZ TestSubRoutine ; Ha ez nem 0, akkor elkezdem a tesztelést
-		MOV @OutputMax_Address, #0h 
+		MOV @OutputMax_Address, #0h ; Ha 0 elemszám visszaugrunk 0 maxmummal és minimummal
 		MOV @OutputMin_Address, #0h
-		RET ; Ha 0 elemszám visszaugrunk 0 maxmummal és minimummal
+	Return:	
+		RET 
 		TestSubRoutine:
+			MOV A, ArrayLength ; Ha minden elemet megvizsgáltunk akkor visszatérünk
+			JZ Return
 			MOV A, #0 ; Kinullázom az A regisztert, hogy DPTR hozzáadva ne legyen falsch érték
 			MOVC A, @A+DPTR ; Az A regiszterbe belerakom a DPTR helyen lévő kódmemória értéket
 			MOV Temp, A ; A Temp(Bank0R3) regiszterbe töltöm a bementi tömbömnek a feldolgozandó elemét
@@ -131,8 +136,8 @@ SearchMinMax:
 				SUBB A, @OutputMin_Address
 				MOV A, PSW 
 				ANL A, #80h
-				JZ TestToAllEllementOfTheArray
+				JZ TestSubRoutine
 				MOV A, Temp
 				MOV @OutputMin_Address, A
-				JMP TestToAllEllementOfTheArray
+				JMP TestSubRoutine
 END

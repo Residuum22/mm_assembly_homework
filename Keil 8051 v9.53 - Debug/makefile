@@ -20,24 +20,24 @@ RM := rm -rf
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: arrayminmax.omf
+all: MARhazi.omf
 
 # Tool invocations
-arrayminmax.omf: echo_path $(OBJS)
+MARhazi.omf: echo_path $(OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Keil 8051 Linker'
-	LX51 "@arrayminmax.lnp" || $(RC)
+	LX51 "@MARhazi.lnp" || $(RC)
 	@echo 'Finished building target: $@'
 
 # Change from all upper case to the expected case
-	@-mv "ARRAYMINMAX.OMF.CRBUILD" "$@"
+	@-mv "MARHAZI.OMF.CRBUILD" "$@"
 
-# Generate hex file: arrayminmax.hex
-	@Ohx51 "arrayminmax.omf" "HEXFILE (arrayminmax.hex)" "H386" 2>&1 >/dev/null
+# Generate hex file: MARhazi.hex
+	@Ohx51 "MARhazi.omf" "HEXFILE (MARhazi.hex)" "H386" 2>&1 >/dev/null
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS) arrayminmax.omf
+	-$(RM) $(EXECUTABLES)$(OBJS) MARhazi.omf
 	-@echo ' '
 
 .PHONY: all clean dependents
