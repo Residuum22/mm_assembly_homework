@@ -117,10 +117,8 @@ SearchMinMax:
 			CheckMax:
 				MOV A, @OutputMax_Address ; Betöltöm a vizsgáláshoz a Max értéket
 				SUBB A, Temp ; Az A-ban lévő számból kivonom az output maxot
-				MOV A, PSW ; A PSW-t előkészítem a vizsgálatra
-				ANL A, #80h ;Összeéselem (0b10000000)-val így viszgálom a CY értékét
-				JZ CheckMin ; Ugrok ha a CY 0, vagyis ha nincs alulcsordulás
-				MOV A, Temp ; Ha van alulcsordulás, Temp értékét berakom a Maximum értékének
+				JNC CheckMin ; Ha nem történt alulcsordulás akkor ugrok és vizsgálom hogy lehet e még minimum
+				MOV A, Temp ; Ha van alulcsordulás CY=1, Temp értékét berakom a Maximum értékének
 				MOV @OutputMax_Address, A
 			; -------------------------------------------------------------------------
 			; Minimum meghatározó rész
@@ -134,9 +132,7 @@ SearchMinMax:
 			CheckMin:
 				MOV A, Temp
 				SUBB A, @OutputMin_Address
-				MOV A, PSW 
-				ANL A, #80h
-				JZ TestSubRoutine
+				JNC TestSubRoutine
 				MOV A, Temp
 				MOV @OutputMin_Address, A
 				JMP TestSubRoutine
