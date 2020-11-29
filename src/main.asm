@@ -18,7 +18,7 @@ $NOMOD51 ; a sztenderd 8051 regiszter definíciók nem szükségesek
 $INCLUDE (SI_EFM8BB3_Defs.inc) ; regiszter és SFR definiciók
 
 ArrayAddressInData 	EQU R0
-ArrayLength 		EQU R2
+//ArrayLength 		EQU R2
 Temp				EQU R3
 OutputMin			EQU R6
 OutputMax			EQU R7
@@ -37,6 +37,7 @@ ArrayEnd:
 DSEG AT 0x30	; 30h felett tárolom a bemenő adatot, így kikerülöm a Bankeket és a Bit Adressable regisztereket. 
 ArrayInData: DS (ArrayEnd-Array) ; Lefoglalom a belső memóriábn a helyeket amikre a tömb fog kerülni
 ArrayInDataEnd:
+ArrayLength: 9
 
 ; Ugrótábla létrehozása
 CSEG AT 0
@@ -67,6 +68,7 @@ EndLoop:
 ; -----------------------------------------------------------------------------------
 ; Funkció: 		A legkisebb és a legnagyobb elem kikeresése a megadott tömbből
 ; Bementek: 	Array kezdőcíme
+;				Array hossza
 ; Kimenetek:   	OutputMin - Legnagyobb elem a DATA memóriában
 ;				OutputMax - Legkisebb elem a DATA memóriában
 ; Regisztereket módosítja:
@@ -74,12 +76,11 @@ EndLoop:
 ;				Temp (R3) - Bank0 R3 regiszter
 ;				OutputMax_Address (R0) - Bank0 R0 regiszter
 ;				OutputMin_Address (R1) - Bank0 R1 regiszter
-;				ArrayLength (R2) - Bank0 R2 regiszter
+;				ArrayLength - In DATA memory
 ;				DPTR - Data pointer
 ;				PSW - Program Status Word
 ; -----------------------------------------------------------------------------------
 SearchMinMax:
-	MOV ArrayLength, #(ArrayInDataEnd-ArrayInData) ; A Bank0 R3 regiszterben eltárolom a tömb elemszámát. Ez az elemszám lesz később a megmaradt elemek száma.
 	MOV ArrayAddressInData, #ArrayInData ; A kezdőcímét a tömb ram-bani helyének elmentem
 	MOV OutputMax, #0h ; A legkisebb elem ami lehet 0, szóval betöltöm ezt az értéket, hogy nehogy szemét legyen benne
 	MOV OutputMin, #0xFF ; Ugyan ez a helyezt, csak a legnagyobb 255
